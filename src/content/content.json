@@ -1,0 +1,22 @@
+{
+  "artworks": [
+    {
+      "id": "aw-loom",
+      "title": "The Loom of Morning",
+      "blurb": "Warm ochre threads cross a pale field, catching the first light. The weaver's rhythm is steady, almost breathing — a study of patience made visible.",
+      "trackId": "track-loom"
+    },
+    {
+      "id": "aw-tide",
+      "title": "Low Tide, Grey Harbour",
+      "blurb": "Boats lean on the mud, waiting for the water to return. Muted greens and slate blues hold the quiet hour between ebb and flood.",
+      "trackId": "track-tide"
+    },
+    {
+      "id": "aw-ember",
+      "title": "Ember Study No. 3",
+      "blurb": "Small sparks scatter against near-black. Read close, the darkness is not empty — it is full of heat about to become light.",
+      "trackId": "track-ember"
+    }
+  ]
+}
