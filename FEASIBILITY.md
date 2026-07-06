@@ -66,9 +66,31 @@ no network.
 
 ### d) Offline & app-like — PWA
 Packaged as a Progressive Web App with a service worker that **precaches the app shell +
-all content + all audio on first load**. After opening it once, the gallery and audio
-work fully offline; it installs to the home screen and runs full-screen like a native app.
-Only *joining a new session* needs the network (for the matchmaking handshake).
+all content + all audio on first load**. After opening it once, the app and its media load
+and play with **zero connectivity**; it installs to the home screen and runs full-screen
+like a native app.
+
+### What actually needs the network (important nuance)
+"Offline" and "the live session" are two different things — don't conflate them:
+
+- **App + content (fully offline):** loading the app and *playing audio* need no network at
+  all. The media is device-local and is **never sent between devices** — only tiny control
+  messages ("play track B at 12.4s") cross the wire, and each phone plays its own copy.
+- **Joining a session (needs the public internet):** WebRTC's *signaling/matchmaking* — two
+  devices finding each other and exchanging connection-setup info — goes over public Nostr
+  relays. This is the **only** time an external server is involved. Once connected, the relay
+  is out of the loop for good.
+- **Staying in sync (needs a path between devices, not necessarily the internet):** after
+  joining, control messages flow **directly peer-to-peer** over the established WebRTC data
+  channel. If the phones share a WiFi that allows device-to-device traffic, that path is
+  **local** (no internet). If they're on different networks — or the WiFi blocks peer traffic
+  (guest-WiFi AP isolation) — the path is routed over the internet, possibly via TURN.
+
+So: a **fully offline** device (airplane mode) can still open the app and play audio manually,
+but it drops out of the *live* leader-driven sync because it has no path to receive control
+messages. The win for a venue is that the bandwidth-heavy part (audio) is fully local, and the
+live coordination is just a few hundred bytes of control state over a direct link — **no media
+server and no signaling server running during the experience.**
 
 ### e) Resilience
 - **Screen Wake Lock** keeps the (leader's) screen from sleeping while the app is open —
