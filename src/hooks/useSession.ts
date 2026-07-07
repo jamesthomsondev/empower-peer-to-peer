@@ -15,7 +15,7 @@ import {
   type SessionController,
 } from '../transport/session-controller'
 import type { ClientState, ViewState, AudioState } from '../session/session-model'
-import { AudioPlayer } from '../audio/audio-player'
+import { MediaController } from '../media/media-controller'
 
 const HOME_VIEW: ViewState = { screen: 'home', artworkId: null }
 const STOPPED_AUDIO: AudioState = { trackId: null, status: 'stopped', positionSec: 0, updatedAt: 0 }
@@ -36,7 +36,8 @@ export interface SessionApi {
   error: string | null
   isLeader: boolean
   following: boolean // leader, or a follower still mirroring the leader
-  audioUnlocked: boolean
+  mediaUnlocked: boolean
+  mountVideo: (el: HTMLElement | null) => void // ref callback for the video container
   effectiveView: ViewState
   effectiveAudio: AudioState
   start: () => Promise<void>
@@ -65,9 +66,15 @@ export function useSession(): SessionApi {
   const [localView, setLocalView] = useState<ViewState | null>(null)
   const [localAudio, setLocalAudio] = useState<AudioState | null>(null)
 
-  const playerRef = useRef<AudioPlayer | null>(null)
-  if (!playerRef.current) playerRef.current = new AudioPlayer()
+  const playerRef = useRef<MediaController | null>(null)
+  if (!playerRef.current) playerRef.current = new MediaController()
   const player = playerRef.current
+
+  // Ref callback for the UI to mount/unmount the shared video element into the view.
+  const mountVideo = useCallback(
+    (el: HTMLElement | null) => player.mountVideoInto(el),
+    [player],
+  )
 
   // Keep-awake: on by default (a sleeping leader is the main cause of connection churn).
   const [keepAwake, setKeepAwake] = useState(true)
@@ -264,7 +271,8 @@ export function useSession(): SessionApi {
     error,
     isLeader,
     following,
-    audioUnlocked: player.unlocked,
+    mediaUnlocked: player.unlocked,
+    mountVideo,
     effectiveView,
     effectiveAudio,
     start,

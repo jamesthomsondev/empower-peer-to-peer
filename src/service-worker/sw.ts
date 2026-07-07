@@ -13,6 +13,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching'
 import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
+import { RangeRequestsPlugin } from 'workbox-range-requests'
 
 declare let self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: Array<{ url: string; revision: string | null }>
@@ -33,12 +34,25 @@ registerRoute(
   }),
 )
 
-// Defence-in-depth: audio is already precached, but if a clip is ever fetched at
-// runtime, serve it cache-first so playback never depends on the network.
+// Defence-in-depth: audio/video/images are already precached, but if a media file is
+// ever fetched at runtime (e.g. a Range request), serve it cache-first so playback
+// never depends on the network. RangeRequestsPlugin lets the SW satisfy the partial
+// (206) requests browsers use to seek within <audio>/<video>.
 registerRoute(
-  ({ request }) => request.destination === 'audio',
+  ({ request }) => request.destination === 'audio' || request.destination === 'video',
   new CacheFirst({
-    cacheName: 'audio-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 7 * 24 * 60 * 60 })],
+    cacheName: 'media-cache',
+    plugins: [
+      new RangeRequestsPlugin(),
+      new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 7 * 24 * 60 * 60 }),
+    ],
+  }),
+)
+
+registerRoute(
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    cacheName: 'image-cache',
+    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 })],
   }),
 )

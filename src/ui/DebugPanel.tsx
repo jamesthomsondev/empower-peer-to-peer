@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { ClientState, ViewState, AudioState } from '../session/session-model'
 import { currentAudioPosition } from '../session/session-model'
+import { mediaKind } from '../content'
 
 /**
  * The debug panel — this matters more than styling. It's how we read what the mesh
@@ -63,10 +64,11 @@ export function DebugPanel({
         </code>,
       )}
       {row(
-        'audio',
+        'media',
         <code>
-          {effectiveAudio.trackId ?? '—'} · {effectiveAudio.status} ·{' '}
-          {currentAudioPosition(effectiveAudio, now).toFixed(1)}s
+          {effectiveAudio.trackId ?? '—'}
+          {effectiveAudio.trackId ? ` (${mediaKind(effectiveAudio.trackId) ?? '?'})` : ''} ·{' '}
+          {effectiveAudio.status} · {currentAudioPosition(effectiveAudio, now).toFixed(1)}s
         </code>,
       )}
     </section>

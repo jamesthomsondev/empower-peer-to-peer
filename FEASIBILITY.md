@@ -56,10 +56,13 @@ every leadership change).
   unambiguous and stops a returning old leader from clobbering state.
 
 ### c) Content — bundled and device-local, never sent over the wire
-The artwork text and audio clips are **baked into the app** and cached on each device.
-The leader broadcasts **only tiny control messages** — "show artwork 2", "play track B
-from 12.4s" — and each phone plays **its own local copy**. Audio is positioned from the
-leader's timestamp so everyone is roughly in sync (fine on headphones; not sample-exact).
+The artwork text, images, audio, and video are **baked into the app** and cached on each
+device. The leader broadcasts **only tiny control messages** — "show artwork 2", "play
+track B from 12.4s" — and each phone renders **its own local copy**. Timed media (audio
+**or** video) is positioned from the leader's timestamp so everyone is roughly in sync
+(fine on headphones; not sample-exact). Images are static and simply follow the mirrored
+view. The same one control channel drives both audio and video — the manifest just marks
+each clip's kind — so nothing about the state machine changed to add video.
 
 **Consequence:** bandwidth is negligible (control only), and content keeps working with
 no network.

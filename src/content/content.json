@@ -4,19 +4,29 @@
       "id": "aw-loom",
       "title": "The Loom of Morning",
       "blurb": "Warm ochre threads cross a pale field, catching the first light. The weaver's rhythm is steady, almost breathing — a study of patience made visible.",
+      "image": "img-loom",
       "trackId": "track-loom"
     },
     {
       "id": "aw-tide",
       "title": "Low Tide, Grey Harbour",
       "blurb": "Boats lean on the mud, waiting for the water to return. Muted greens and slate blues hold the quiet hour between ebb and flood.",
+      "image": "img-tide",
       "trackId": "track-tide"
     },
     {
       "id": "aw-ember",
       "title": "Ember Study No. 3",
       "blurb": "Small sparks scatter against near-black. Read close, the darkness is not empty — it is full of heat about to become light.",
+      "image": "img-ember",
       "trackId": "track-ember"
+    },
+    {
+      "id": "aw-motion",
+      "title": "Kinetic Field (video)",
+      "blurb": "A moving study in colour and grid. Play it as leader and the whole group's video scrubs to the same moment — proving synced video, not just audio.",
+      "image": "img-motion",
+      "trackId": "clip-motion"
     }
   ]
 }

@@ -2,8 +2,10 @@
 
 A browser PWA where **4–6 co-located people share a gallery experience over WebRTC**: one
 "leader" drives what everyone sees/hears, followers mirror, and leadership migrates
-automatically if the leader leaves. Content (artwork + audio) is **device-local** (PWA-cached),
-so the wire only carries tiny control messages — never media.
+automatically if the leader leaves. Content (artwork text, **images, audio, and video**) is
+**device-local** (PWA-cached), so the wire only carries tiny control messages — never media.
+Timed media (audio *or* video) is play/pause/seek-synced from the leader's clock; images
+follow the mirrored view.
 
 A **tech spike**: skeletal UI, prominent **debug panel**. For how it works and the
 pros/cons/limits see **[FEASIBILITY.md](FEASIBILITY.md)**; for the reference-app study see
@@ -75,8 +77,10 @@ src/
   transport/
     config.ts                     # strategy swap seam + STUN/TURN + relay override
     session-controller.ts         # Trystero ⇄ model glue: gossip relay, heartbeats, migration
-  audio/audio-player.ts           # device-local playback + iOS autoplay-gate unlock
-  content/{content.json, audio/*.mp3, index.ts, audio.ts}   # bundled, precached content
+  media/media-controller.ts       # device-local audio+video playback + iOS autoplay-gate unlock
+  content/                        # bundled, precached content:
+    content.json, index.ts, media.ts, images.ts
+    audio/*.mp3, video/*.mp4, images/*.jpg
   hooks/useSession.ts             # React binding: lifecycle, audio, wake lock, detached browsing
   ui/{App,DebugPanel,QRCode}.tsx
   service-worker/sw.ts            # injectManifest SW: precache + SPA fallback

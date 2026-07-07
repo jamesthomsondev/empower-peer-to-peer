@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSession } from '../hooks/useSession'
-import { ARTWORKS, artworkById } from '../content'
+import { ARTWORKS, artworkById, imageUrl, mediaKind } from '../content'
 import { STRATEGY } from '../transport/config'
 import { currentAudioPosition } from '../session/session-model'
 import { QRCode } from './QRCode'
@@ -167,18 +167,27 @@ function Session({ api }: { api: ReturnType<typeof useSession> }) {
             {!canControl && <span className="muted small">mirroring leader — read only</span>}
           </div>
           <ul className="artworks">
-            {ARTWORKS.map((a) => (
-              <li key={a.id}>
-                <button
-                  className="artwork-item"
-                  disabled={!canControl}
-                  onClick={() => api.openArtwork(a.id)}
-                >
-                  <b>{a.title}</b>
-                  <span className="muted small"> {a.blurb.slice(0, 60)}…</span>
-                </button>
-              </li>
-            ))}
+            {ARTWORKS.map((a) => {
+              const thumb = imageUrl(a.image)
+              const isVideo = mediaKind(a.trackId) === 'video'
+              return (
+                <li key={a.id}>
+                  <button
+                    className="artwork-item"
+                    disabled={!canControl}
+                    onClick={() => api.openArtwork(a.id)}
+                  >
+                    {thumb && <img className="thumb" src={thumb} alt="" />}
+                    <span className="artwork-meta">
+                      <b>
+                        {a.title} {isVideo ? '🎬' : '🎧'}
+                      </b>
+                      <span className="muted small"> {a.blurb.slice(0, 56)}…</span>
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </section>
       ) : (
@@ -187,34 +196,52 @@ function Session({ api }: { api: ReturnType<typeof useSession> }) {
             ← Back to gallery
           </button>
           {artwork ? (
-            <>
-              <h2>{artwork.title}</h2>
-              <p>{artwork.blurb}</p>
-              <div className="audio-controls">
-                {audio.status === 'playing' && audio.trackId === artwork.trackId ? (
-                  <button disabled={!canControl} onClick={api.pause}>
-                    ⏸ Pause audio
-                  </button>
-                ) : (
-                  <button disabled={!canControl} onClick={() => api.play(artwork.trackId)}>
-                    ▶ Play audio
-                  </button>
-                )}
-                <span className="muted small">
-                  {audio.trackId === artwork.trackId
-                    ? `${audio.status} · ${currentAudioPosition(audio).toFixed(1)}s`
-                    : 'not playing this track'}
-                </span>
-              </div>
-              {!canControl && (
-                <p className="hint">
-                  You're mirroring the leader. Detach above to control your own playback.
-                </p>
-              )}
-              {!api.audioUnlocked && (
-                <p className="error small">Audio not unlocked — rejoin and tap to enable.</p>
-              )}
-            </>
+            (() => {
+              const isVideo = mediaKind(artwork.trackId) === 'video'
+              const mediaWord = isVideo ? 'video' : 'audio'
+              const poster = imageUrl(artwork.image)
+              return (
+                <>
+                  <h2>{artwork.title}</h2>
+                  {isVideo ? (
+                    // The shared, already-unlocked video element is mounted in here.
+                    // Poster shows through until playback covers it.
+                    <div
+                      className="video-wrap"
+                      ref={api.mountVideo}
+                      style={poster ? { backgroundImage: `url(${poster})` } : undefined}
+                    />
+                  ) : (
+                    poster && <img className="hero" src={poster} alt={artwork.title} />
+                  )}
+                  <p>{artwork.blurb}</p>
+                  <div className="audio-controls">
+                    {audio.status === 'playing' && audio.trackId === artwork.trackId ? (
+                      <button disabled={!canControl} onClick={api.pause}>
+                        ⏸ Pause {mediaWord}
+                      </button>
+                    ) : (
+                      <button disabled={!canControl} onClick={() => api.play(artwork.trackId)}>
+                        ▶ Play {mediaWord}
+                      </button>
+                    )}
+                    <span className="muted small">
+                      {audio.trackId === artwork.trackId
+                        ? `${audio.status} · ${currentAudioPosition(audio).toFixed(1)}s`
+                        : `not playing this ${mediaWord}`}
+                    </span>
+                  </div>
+                  {!canControl && (
+                    <p className="hint">
+                      You're mirroring the leader. Detach above to control your own playback.
+                    </p>
+                  )}
+                  {!api.mediaUnlocked && (
+                    <p className="error small">Media not unlocked — rejoin and tap to enable.</p>
+                  )}
+                </>
+              )
+            })()
           ) : (
             <p className="muted">Unknown artwork.</p>
           )}

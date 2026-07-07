@@ -2423,6 +2423,7 @@ __metadata:
     workbox-core: "npm:~7.4.0"
     workbox-expiration: "npm:~7.4.0"
     workbox-precaching: "npm:~7.4.0"
+    workbox-range-requests: "npm:~7.4.0"
     workbox-routing: "npm:~7.4.0"
     workbox-strategies: "npm:~7.4.0"
   languageName: unknown
@@ -5050,7 +5051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"workbox-range-requests@npm:7.4.1":
+"workbox-range-requests@npm:7.4.1, workbox-range-requests@npm:~7.4.0":
   version: 7.4.1
   resolution: "workbox-range-requests@npm:7.4.1"
   dependencies:

@@ -22,8 +22,10 @@ export default defineConfig({
         // so the bundled gallery audio is available fully offline on first load.
         globPatterns: [
           "**/*.{js,css,html,webmanifest}",
-          "static/**/*.{svg,png,jpg,jpeg,gif,webp,ttf,woff2,mp3,ico}",
+          "static/**/*.{svg,png,jpg,jpeg,gif,webp,ttf,woff2,mp3,mp4,ico}",
         ],
+        // clip-motion.mp4 is ~1.1 MB; keep the precache size ceiling above default (2 MiB).
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
       },
       // Minimal installable manifest (reference relies on meta tags; we add this so the
       // app installs as a standalone PWA on phones — needed for the two-device offline test).
